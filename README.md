@@ -1,5 +1,3 @@
-# k8s-releases-bootstrap
-
 This repository is used to bootstrap the Flux v2 setup in the cluster. It is the first repository that is reconciled by Flux v2 after the Terraform is applied.
 
 The directory structure demonstrates how to use a single repository to bootstrap multiple clusters with different configurations using the [`flux_bootstrap_git`](https://registry.terraform.io/providers/fluxcd/flux/latest/docs/resources/bootstrap_git) resource of the [Flux terraform provider](https://registry.terraform.io/providers/fluxcd/flux/1.2.3)

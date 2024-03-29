@@ -1,0 +1,44 @@
+# Ref: https://registry.terraform.io/providers/fluxcd/flux/latest/docs/resources/bootstrap_git#customizing-flux
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - gotk-components.yaml
+  - gotk-sync.yaml
+patches:
+  # Patch kustomize-controller deployment with annotation to allow assume role to import secrets
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: kustomize-controller
+        namespace: flux-system
+      spec:
+        template:
+          metadata:
+            annotations:
+              iam.amazonaws.com/role: flux-secrets-assume-us-west-2
+    target:
+      kind: Deployment
+      name: kustomize-controller
+      namespace: flux-system
+  # Patch flux-system namespace with annotation to allow assume role
+  - patch: |
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: flux-system
+        annotations:
+          iam.amazonaws.com/permitted: .*
+    target:
+      kind: Namespace
+      name: flux-system
+  # Patch helm-controller deployment to enable drift detection and correction
+  # Ref: https://fluxcd.io/flux/installation/configuration/helm-drift-detection/
+  - patch: |
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --feature-gates=DetectDrift=true,CorrectDrift=true
+    target:
+      kind: Deployment
+      name: helm-controller
+      namespace: flux-system

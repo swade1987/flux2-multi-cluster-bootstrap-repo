@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../_base
+- flux-system
+patchesStrategicMerge:
+- kustomizations/k8s-releases-acme.yaml
+- kustomizations/k8s-releases-platform.yaml
